@@ -279,10 +279,13 @@ function CertViewPage({ cert, cfg, onBack }) {
     useEffect(() => {
         setImgErr(false);
         if (cert.certificate_file) {
-            // certificate_file = "certificates/STC-2026-001_Name.png"
-            // MEDIA_BASE = "https://tannu-backend.onrender.com"
-            // Full URL = "https://tannu-backend.onrender.com/media/certificates/STC-2026-001_Name.png"
-            const url = `${MEDIA_BASE}/media/${cert.certificate_file}`;
+            // certificate_file ab Cloudinary ka full URL hai
+            // e.g. "https://res.cloudinary.com/xyz/image/upload/..."
+            // Ya local dev mein "certificates/STC-2026-001_Name.png"
+            const isFullUrl = cert.certificate_file.startsWith("http");
+            const url = isFullUrl
+                ? cert.certificate_file
+                : `${MEDIA_BASE}/media/${cert.certificate_file}`;
             setImgSrc(url);
         } else {
             setImgSrc(null);
