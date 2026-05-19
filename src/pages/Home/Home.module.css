@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap');
 
+/* ─── RESET & VARIABLES ──────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -35,21 +36,22 @@
     background: var(--cream);
     color: var(--ink);
     min-height: 100vh;
-    transition: background .4s, color .4s;
+    transition: background 0.4s, color 0.4s;
 }
 
-/* ── SHELL / NAV ─────────────────────────────────────────────────────────── */
+/* ─── SHELL ─────────────────────────────────────────────────────────────── */
 .shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
+/* ─── NAV ────────────────────────────────────────────────────────────────── */
 .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: .9rem 1.4rem;
+    padding: 0.9rem 1.4rem;
     border-bottom: 1px solid var(--border);
     background: var(--parchment);
     position: sticky;
@@ -60,8 +62,13 @@
 .navBrand {
     display: flex;
     align-items: center;
-    gap: .6rem;
+    gap: 0.6rem;
     cursor: pointer;
+}
+
+/* Hide fallback SVG by default; shown via JS if img fails */
+.navBrand img+svg {
+    display: none;
 }
 
 .navTitle {
@@ -75,12 +82,12 @@
     background: none;
     border: 1px solid var(--border);
     border-radius: 50px;
-    padding: .4rem .9rem;
-    font-size: .78rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.78rem;
     color: var(--muted);
     cursor: pointer;
     font-family: 'Jost', sans-serif;
-    transition: all .25s;
+    transition: all 0.25s;
 }
 
 .navBtn:hover {
@@ -88,12 +95,12 @@
     color: var(--gold);
 }
 
-/* ── HOME ────────────────────────────────────────────────────────────────── */
+/* ─── HOME ───────────────────────────────────────────────────────────────── */
 .home {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212, 168, 32, .13) 0%, transparent 70%), var(--cream);
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212, 168, 32, 0.13) 0%, transparent 70%), var(--cream);
 }
 
 .hero {
@@ -109,17 +116,21 @@
 .heroBadge {
     display: inline-flex;
     align-items: center;
-    gap: .5rem;
-    background: rgba(184, 144, 10, .12);
+    gap: 0.5rem;
+    background: rgba(184, 144, 10, 0.12);
     border: 1px solid var(--border);
     border-radius: 50px;
-    padding: .35rem 1rem;
-    font-size: .72rem;
+    padding: 0.35rem 1rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: var(--gold);
-    letter-spacing: .12em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.4rem;
+}
+
+.heroTitles {
+    margin-bottom: 0.5rem;
 }
 
 .heroTagline {
@@ -128,7 +139,8 @@
     font-weight: 700;
     line-height: 1.1;
     color: var(--ink);
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
 }
 
 .heroTagline em {
@@ -137,17 +149,17 @@
 }
 
 .heroSub {
-    font-size: clamp(.88rem, 2.5vw, 1.05rem);
+    font-size: clamp(0.88rem, 2.5vw, 1.05rem);
     color: var(--muted);
     max-width: 420px;
     line-height: 1.7;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
 }
 
 .heroDivider {
     width: 80px;
     height: 2px;
-    margin: 1.2rem auto;
+    margin: 1.5rem auto;
     background: linear-gradient(90deg, transparent, var(--gold2), transparent);
 }
 
@@ -156,7 +168,7 @@
     gap: 1.5rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 1.8rem;
+    margin-bottom: 2rem;
 }
 
 .stat {
@@ -171,19 +183,19 @@
 }
 
 .statL {
-    font-size: .72rem;
+    font-size: 0.72rem;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: .1em;
+    letter-spacing: 0.1em;
 }
 
-/* ── DEMO CERT ───────────────────────────────────────────────────────────── */
+/* ─── DEMO CERTIFICATE ───────────────────────────────────────────────────── */
 .demoWrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: .7rem;
-    margin-bottom: 1.8rem;
+    gap: 0.7rem;
+    margin-bottom: 2rem;
     width: 100%;
     max-width: 480px;
 }
@@ -193,32 +205,33 @@
     max-width: 420px;
     border-radius: 10px;
     border: 2px solid var(--border);
-    box-shadow: 0 8px 32px rgba(184, 144, 10, .18);
+    box-shadow: 0 8px 32px rgba(184, 144, 10, 0.18);
 }
 
 .demoBtn {
     display: inline-flex;
     align-items: center;
-    gap: .4rem;
+    gap: 0.4rem;
     background: linear-gradient(135deg, var(--gold), var(--gold2));
     color: #1C1208;
     border: none;
     border-radius: 50px;
-    padding: .55rem 1.4rem;
+    padding: 0.55rem 1.4rem;
     font-family: 'Jost', sans-serif;
     font-weight: 500;
-    font-size: .85rem;
+    font-size: 0.85rem;
+    text-decoration: none;
     cursor: pointer;
-    transition: all .25s;
-    box-shadow: 0 4px 16px rgba(184, 144, 10, .3);
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(184, 144, 10, 0.3);
 }
 
 .demoBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(184, 144, 10, .45);
+    box-shadow: 0 8px 24px rgba(184, 144, 10, 0.45);
 }
 
-/* ── HOME CARDS ──────────────────────────────────────────────────────────── */
+/* ─── HOME CARDS ─────────────────────────────────────────────────────────── */
 .homeCards {
     display: flex;
     flex-direction: column;
@@ -234,7 +247,7 @@
     padding: 1.3rem 1.4rem;
     cursor: pointer;
     background: var(--parchment);
-    transition: all .3s;
+    transition: all 0.3s;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -246,9 +259,9 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(212, 168, 32, .07), transparent);
+    background: linear-gradient(135deg, rgba(212, 168, 32, 0.07), transparent);
     opacity: 0;
-    transition: opacity .3s;
+    transition: opacity 0.3s;
 }
 
 .hcard:hover::before {
@@ -258,7 +271,7 @@
 .hcard:hover {
     border-color: var(--gold2);
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(184, 144, 10, .18);
+    box-shadow: 0 8px 28px rgba(184, 144, 10, 0.18);
 }
 
 .hcardIcon {
@@ -270,7 +283,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: rgba(212, 168, 32, .1);
+    background: rgba(212, 168, 32, 0.1);
 }
 
 .hcardBody {
@@ -283,11 +296,11 @@
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--ink);
-    margin-bottom: .2rem;
+    margin-bottom: 0.2rem;
 }
 
 .hcardDesc {
-    font-size: .8rem;
+    font-size: 0.8rem;
     color: var(--muted);
     line-height: 1.5;
 }
@@ -295,8 +308,8 @@
 .hcardArr {
     font-size: 1.2rem;
     color: var(--gold);
-    opacity: .6;
-    transition: all .3s;
+    opacity: 0.6;
+    transition: all 0.3s;
 }
 
 .hcard:hover .hcardArr {
@@ -304,7 +317,7 @@
     transform: translateX(3px);
 }
 
-/* ── INFO STRIP ──────────────────────────────────────────────────────────── */
+/* ─── INFO STRIP / FOOTER ────────────────────────────────────────────────── */
 .infoStrip {
     background: var(--parchment);
     border-top: 1px solid var(--border);
@@ -319,21 +332,21 @@
 }
 
 .infoLabel {
-    font-size: .7rem;
+    font-size: 0.7rem;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: .1em;
-    margin-bottom: .3rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
 }
 
 .infoVal {
     font-family: 'Cormorant Garamond', serif;
-    font-size: .92rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--ink);
 }
 
-/* ── SEARCH / PAGE WRAP ──────────────────────────────────────────────────── */
+/* ─── SEARCH PAGE ────────────────────────────────────────────────────────── */
 .pageWrap {
     flex: 1;
     padding: 1.5rem;
@@ -347,11 +360,11 @@
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--ink);
-    margin-bottom: .3rem;
+    margin-bottom: 0.3rem;
 }
 
 .pageHint {
-    font-size: .85rem;
+    font-size: 0.85rem;
     color: var(--muted);
     margin-bottom: 1.5rem;
     line-height: 1.5;
@@ -366,12 +379,12 @@
 }
 
 .fieldLabel {
-    font-size: .72rem;
+    font-size: 0.72rem;
     color: var(--gold);
-    letter-spacing: .1em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     display: block;
-    margin-bottom: .4rem;
+    margin-bottom: 0.4rem;
 }
 
 .fieldInput {
@@ -380,11 +393,11 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     color: var(--ink);
-    font-size: .95rem;
-    padding: .75rem 1rem;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
     font-family: 'Jost', sans-serif;
     outline: none;
-    transition: border-color .2s;
+    transition: border-color 0.2s;
 }
 
 .fieldInput:focus {
@@ -393,14 +406,14 @@
 
 .fieldInput::placeholder {
     color: var(--muted);
-    opacity: .6;
+    opacity: 0.6;
 }
 
-/* ── RESULTS ─────────────────────────────────────────────────────────────── */
+/* ─── RESULTS ────────────────────────────────────────────────────────────── */
 .resultList {
     display: flex;
     flex-direction: column;
-    gap: .7rem;
+    gap: 0.7rem;
 }
 
 .rcard {
@@ -409,11 +422,11 @@
     border-radius: 12px;
     padding: 1rem 1.2rem;
     cursor: pointer;
-    transition: all .3s;
+    transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: .9rem;
-    animation: rise .35s ease both;
+    gap: 0.9rem;
+    animation: rise 0.4s ease both;
 }
 
 .rcard:hover {
@@ -442,7 +455,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: .9rem;
+    font-size: 0.9rem;
     color: #1C1208;
     flex-shrink: 0;
 }
@@ -455,14 +468,14 @@
 }
 
 .rcardNo {
-    font-size: .75rem;
+    font-size: 0.75rem;
     color: var(--gold);
     margin-top: 2px;
-    letter-spacing: .06em;
+    letter-spacing: 0.06em;
 }
 
 .rcardMeta {
-    font-size: .72rem;
+    font-size: 0.72rem;
     color: var(--muted);
     margin-top: 2px;
 }
@@ -477,10 +490,10 @@
     padding: 2rem;
     color: var(--muted);
     font-style: italic;
-    font-size: .9rem;
+    font-size: 0.9rem;
 }
 
-/* ── CERT DETAIL ─────────────────────────────────────────────────────────── */
+/* ─── CERT DETAIL ────────────────────────────────────────────────────────── */
 .certDetail {
     flex: 1;
     padding: 1.2rem;
@@ -490,16 +503,16 @@
 }
 
 .certNoLabel {
-    font-size: .78rem;
+    font-size: 0.78rem;
     color: var(--gold);
     margin-bottom: 1rem;
-    letter-spacing: .08em;
+    letter-spacing: 0.08em;
 }
 
 .detailGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: .7rem;
+    gap: 0.7rem;
     margin-bottom: 1.2rem;
 }
 
@@ -507,51 +520,184 @@
     background: var(--parchment);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: .75rem 1rem;
+    padding: 0.75rem 1rem;
 }
 
 .ditemLabel {
-    font-size: .68rem;
+    font-size: 0.68rem;
     color: var(--gold);
     text-transform: uppercase;
-    letter-spacing: .1em;
+    letter-spacing: 0.1em;
     display: block;
-    margin-bottom: .2rem;
+    margin-bottom: 0.2rem;
 }
 
 .ditemVal {
-    font-size: .92rem;
+    font-size: 0.92rem;
     color: var(--ink);
     font-weight: 500;
 }
 
-/* ── CERTIFICATE IMAGE DISPLAY ───────────────────────────────────────────── */
-.certImageWrap {
-    width: 100%;
-    margin-bottom: 1rem;
-    border-radius: 12px;
+/* ─── CERTIFICATE CARD ───────────────────────────────────────────────────── */
+.certCard {
+    background: linear-gradient(160deg, #FFFDF5 0%, #FFF5D0 50%, #FDF0B8 100%);
+    border: 3px solid var(--gold2);
+    border-radius: 16px;
+    padding: 1.8rem 1.4rem;
+    position: relative;
     overflow: hidden;
-    border: 2px solid var(--gold2);
-    box-shadow: 0 8px 32px rgba(184, 144, 10, .2);
+    box-shadow: 0 0 0 6px rgba(212, 168, 32, 0.1), 0 12px 40px rgba(184, 144, 10, 0.2);
+    color: #1C1208;
 }
 
-.certImage {
-    width: 100%;
-    display: block;
+.certCard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(60deg, transparent, transparent 22px, rgba(212, 168, 32, 0.05) 22px, rgba(212, 168, 32, 0.05) 23px);
+    pointer-events: none;
 }
 
-.certImagePlaceholder {
-    background: var(--parchment);
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 2rem;
+.certCorner {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+}
+
+.tl {
+    top: 10px;
+    left: 10px;
+    border-top: 2px solid #C9A84C;
+    border-left: 2px solid #C9A84C;
+}
+
+.tr {
+    top: 10px;
+    right: 10px;
+    border-top: 2px solid #C9A84C;
+    border-right: 2px solid #C9A84C;
+}
+
+.bl {
+    bottom: 10px;
+    left: 10px;
+    border-bottom: 2px solid #C9A84C;
+    border-left: 2px solid #C9A84C;
+}
+
+.br {
+    bottom: 10px;
+    right: 10px;
+    border-bottom: 2px solid #C9A84C;
+    border-right: 2px solid #C9A84C;
+}
+
+.certHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    position: relative;
+}
+
+/* Hide fallback SVG in cert head too */
+.certHead img+svg {
+    display: none;
+}
+
+.certH1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #6B4C00;
     text-align: center;
-    color: var(--muted);
-    font-size: .88rem;
-    margin-bottom: 1rem;
+    flex: 1;
 }
 
-/* ── ADMIN ────────────────────────────────────────────────────────────────── */
+.certOf {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #8B6800;
+    text-align: center;
+    letter-spacing: 0.18em;
+    margin-bottom: 0.6rem;
+}
+
+.certGoldLine {
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+    margin: 0.7rem 0;
+}
+
+.certPresented {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #5A4000;
+    margin-bottom: 0.3rem;
+}
+
+.certName {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    color: #6B4C00;
+    text-align: center;
+    margin-bottom: 0.8rem;
+}
+
+.certBodyText {
+    font-size: 0.82rem;
+    text-align: center;
+    color: #4A3500;
+    line-height: 1.8;
+    margin-bottom: 0.8rem;
+}
+
+.certFoot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.certInst {
+    font-size: 0.7rem;
+    color: #5A4000;
+    line-height: 1.7;
+}
+
+.certSigLine {
+    width: 90px;
+    height: 1px;
+    background: #C9A84C;
+    margin-bottom: 4px;
+}
+
+.certSigName {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #5A4000;
+}
+
+.certSigRole {
+    font-style: italic;
+    font-size: 0.75rem;
+    color: #8A6800;
+}
+
+.certNoLine {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4A3500;
+    margin-top: 0.6rem;
+}
+
+/* ─── ADMIN ──────────────────────────────────────────────────────────────── */
 .adminWrap {
     flex: 1;
     padding: 1.2rem;
@@ -572,16 +718,16 @@
 
 .tab {
     flex: 1;
-    padding: .55rem;
+    padding: 0.55rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-family: 'Jost', sans-serif;
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 500;
     background: transparent;
     color: var(--muted);
-    transition: all .2s;
+    transition: all 0.2s;
 }
 
 .tabOn {
@@ -592,17 +738,17 @@
 .formGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: .8rem;
+    gap: 0.8rem;
 }
 
 .field {
     display: flex;
     flex-direction: column;
-    gap: .3rem;
+    gap: 0.3rem;
 }
 
 .full {
-    grid-column: 1/-1;
+    grid-column: 1 / -1;
 }
 
 .fi {
@@ -610,11 +756,11 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     color: var(--ink);
-    font-size: .9rem;
-    padding: .72rem .9rem;
+    font-size: 0.9rem;
+    padding: 0.72rem 0.9rem;
     font-family: 'Jost', sans-serif;
     outline: none;
-    transition: border-color .2s;
+    transition: border-color 0.2s;
     width: 100%;
 }
 
@@ -622,101 +768,33 @@
     border-color: var(--gold2);
 }
 
-/* ── CERT NO PREVIEW BOX ─────────────────────────────────────────────────── */
-.certNoPreview {
-    background: linear-gradient(135deg, rgba(212, 168, 32, .12), rgba(212, 168, 32, .05));
-    border: 1.5px solid var(--gold2);
-    border-radius: var(--r);
-    padding: 1.1rem 1.3rem;
-    margin-bottom: 1.2rem;
-    text-align: center;
-}
-
-.certNoLabel2 {
-    display: block;
-    font-size: .72rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    margin-bottom: .4rem;
-}
-
-.certNoBig {
-    display: block;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: .08em;
-    margin-bottom: .3rem;
-}
-
-.certNoHint {
-    font-size: .75rem;
-    color: var(--muted);
-    line-height: 1.5;
-}
-
-/* ── UPLOAD AREA ─────────────────────────────────────────────────────────── */
-.uploadArea {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all .25s;
-    overflow: hidden;
-    background: var(--cream);
-}
-
-.uploadArea:hover {
-    border-color: var(--gold2);
-    background: rgba(212, 168, 32, .05);
-}
-
-.uploadPlaceholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .5rem;
-    padding: 2rem 1rem;
-    color: var(--muted);
-    font-size: .85rem;
-    text-align: center;
-}
-
-.uploadPreview {
-    width: 100%;
-    display: block;
-    max-height: 300px;
-    object-fit: contain;
-}
-
-/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
+/* ─── BUTTONS ────────────────────────────────────────────────────────────── */
 .btn {
     border: none;
     border-radius: var(--r);
     cursor: pointer;
     font-family: 'Jost', sans-serif;
     font-weight: 500;
-    transition: all .25s;
-    padding: .85rem 1.6rem;
+    transition: all 0.25s;
+    padding: 0.85rem 1.6rem;
 }
 
 .btnGold {
     background: linear-gradient(135deg, var(--gold), var(--gold2));
     color: #1C1208;
     width: 100%;
-    margin-top: .8rem;
+    margin-top: 0.8rem;
     font-size: 1rem;
-    box-shadow: 0 4px 16px rgba(184, 144, 10, .3);
+    box-shadow: 0 4px 16px rgba(184, 144, 10, 0.3);
 }
 
 .btnGold:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(184, 144, 10, .45);
+    box-shadow: 0 8px 24px rgba(184, 144, 10, 0.45);
 }
 
 .btnGold:disabled {
-    opacity: .6;
+    opacity: 0.6;
     cursor: not-allowed;
     transform: none;
 }
@@ -725,7 +803,7 @@
     border: 1px solid var(--border);
     background: transparent;
     color: var(--muted);
-    font-size: .85rem;
+    font-size: 0.85rem;
 }
 
 .btnGhost:hover {
@@ -733,48 +811,28 @@
     color: var(--gold);
 }
 
-.btnDanger {
-    background: #c0392b;
-    color: #fff;
-    width: 100%;
-    margin-top: 0;
-    font-size: 1rem;
-    box-shadow: 0 4px 16px rgba(192, 57, 43, .3);
-}
-
-.btnDanger:hover {
-    background: #a93226;
-    transform: translateY(-1px);
-}
-
-.btnDanger:disabled {
-    opacity: .6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* ── MESSAGES ────────────────────────────────────────────────────────────── */
+/* ─── MESSAGES ───────────────────────────────────────────────────────────── */
 .msgOk {
     color: #3A7A3A;
-    background: rgba(58, 122, 58, .1);
-    border: 1px solid rgba(58, 122, 58, .3);
+    background: rgba(58, 122, 58, 0.1);
+    border: 1px solid rgba(58, 122, 58, 0.3);
     border-radius: 8px;
-    padding: .6rem 1rem;
-    font-size: .83rem;
-    margin-top: .6rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.83rem;
+    margin-top: 0.6rem;
 }
 
 .msgErr {
     color: #A33A3A;
-    background: rgba(163, 58, 58, .1);
-    border: 1px solid rgba(163, 58, 58, .3);
+    background: rgba(163, 58, 58, 0.1);
+    border: 1px solid rgba(163, 58, 58, 0.3);
     border-radius: 8px;
-    padding: .6rem 1rem;
-    font-size: .83rem;
-    margin-top: .6rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.83rem;
+    margin-top: 0.6rem;
 }
 
-/* ── CONFIRM BOX ─────────────────────────────────────────────────────────── */
+/* ─── CONFIRMATION BOX ───────────────────────────────────────────────────── */
 .confirmBox {
     background: var(--parchment);
     border: 1px solid var(--border);
@@ -784,23 +842,23 @@
 
 .confirmTitle {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--gold);
-    margin-bottom: .8rem;
+    margin-bottom: 1rem;
 }
 
 .confirmGrid {
     display: flex;
     flex-direction: column;
-    gap: .4rem;
+    gap: 0.5rem;
 }
 
 .confirmRow {
     display: flex;
     justify-content: space-between;
-    font-size: .84rem;
-    padding: .35rem 0;
+    font-size: 0.85rem;
+    padding: 0.4rem 0;
     border-bottom: 1px solid var(--border);
 }
 
@@ -813,42 +871,48 @@
 .confirmVal {
     color: var(--ink);
     font-weight: 600;
-    text-align: right;
-    max-width: 60%;
 }
 
-/* ── DELETE BUTTON ───────────────────────────────────────────────────────── */
-.deleteBtn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: .3rem .5rem;
-    border-radius: 8px;
-    transition: background .2s;
-    color: #c0392b;
-    flex-shrink: 0;
+/* ─── SETTINGS ───────────────────────────────────────────────────────────── */
+.settingsGroup {
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 1rem;
 }
 
-.deleteBtn:hover {
-    background: rgba(192, 57, 43, .12);
+.sgHead {
+    padding: 0.8rem 1rem;
+    background: var(--parchment);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
-/* ── CERT LIST ───────────────────────────────────────────────────────────── */
+.sgBody {
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+/* ─── CERT LIST ──────────────────────────────────────────────────────────── */
 .clist {
     display: flex;
     flex-direction: column;
-    gap: .6rem;
+    gap: 0.6rem;
 }
 
 .clistItem {
     background: var(--parchment);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: .9rem 1.1rem;
+    padding: 0.9rem 1.1rem;
     display: flex;
     align-items: center;
-    gap: .8rem;
+    gap: 0.8rem;
 }
 
 .clistAv {
@@ -859,7 +923,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #1C1208;
     flex-shrink: 0;
@@ -867,96 +931,41 @@
 
 .clistName {
     font-weight: 500;
-    font-size: .9rem;
+    font-size: 0.9rem;
     color: var(--ink);
 }
 
 .clistNo {
-    font-size: .72rem;
+    font-size: 0.72rem;
     color: var(--gold);
 }
 
 .paidBadge {
-    font-size: .68rem;
-    padding: .25rem .6rem;
+    margin-left: auto;
+    font-size: 0.68rem;
+    padding: 0.25rem 0.6rem;
     border-radius: 50px;
     font-weight: 500;
-    white-space: nowrap;
 }
 
 .paidY {
-    background: rgba(58, 122, 58, .15);
+    background: rgba(58, 122, 58, 0.15);
     color: #2E6B2E;
 }
 
 .paidN {
-    background: rgba(163, 58, 58, .12);
+    background: rgba(163, 58, 58, 0.12);
     color: #8A2A2A;
 }
 
-/* ── MODAL ───────────────────────────────────────────────────────────────── */
-.modalOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, .55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    padding: 1rem;
-}
-
-.modalBox {
-    background: var(--parchment);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 1.8rem 1.5rem;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
-}
-
-.modalTitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #c0392b;
-    margin-bottom: .4rem;
-}
-
-/* ── SETTINGS ────────────────────────────────────────────────────────────── */
-.settingsGroup {
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
-
-.sgHead {
-    padding: .8rem 1rem;
-    background: var(--parchment);
-    font-size: .78rem;
-    font-weight: 600;
-    color: var(--gold);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-}
-
-.sgBody {
-    padding: .8rem;
-    display: flex;
-    flex-direction: column;
-    gap: .7rem;
-}
-
-/* ── LOGIN ───────────────────────────────────────────────────────────────── */
+/* ─── LOGIN ──────────────────────────────────────────────────────────────── */
 .loginBg {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background: radial-gradient(ellipse at 50% 40%, rgba(212, 168, 32, .12), transparent 70%), var(--cream);
+    background: radial-gradient(ellipse at 50% 40%, rgba(212, 168, 32, 0.12), transparent 70%), var(--cream);
 }
 
 .loginBox {
@@ -966,7 +975,7 @@
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 2.2rem 1.8rem;
-    box-shadow: 0 12px 48px rgba(184, 144, 10, .15);
+    box-shadow: 0 12px 48px rgba(184, 144, 10, 0.15);
 }
 
 .loginTitle {
@@ -975,26 +984,34 @@
     font-weight: 700;
     color: var(--gold);
     text-align: center;
-    margin: .6rem 0 .2rem;
+    margin: 0.6rem 0 0.2rem;
 }
 
 .loginSub {
-    font-size: .8rem;
+    font-size: 0.8rem;
     color: var(--muted);
     text-align: center;
     margin-bottom: 1.6rem;
 }
 
-/* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
-@media(max-width:480px) {
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .detailGrid {
+        grid-template-columns: 1fr;
+    }
 
-    .detailGrid,
     .formGrid {
         grid-template-columns: 1fr;
     }
 
     .full {
         grid-column: unset;
+    }
+
+    .certFoot {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 
     .infoStrip {
@@ -1005,7 +1022,39 @@
         gap: 1rem;
     }
 
-    .certNoBig {
+    .certH1 {
         font-size: 1.4rem;
     }
+}
+
+/* ── CERTIFICATE IMAGE (uploaded PNG shown in detail view) ─────────────── */
+.certImageWrap {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--gold2);
+    box-shadow: 0 8px 32px rgba(184, 144, 10, 0.2);
+}
+
+.certImage {
+    width: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.certImagePlaceholder {
+    background: var(--parchment);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: .88rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 120px;
 }
