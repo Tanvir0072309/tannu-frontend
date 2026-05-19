@@ -1,20 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./Home.module.css";
 
-// ── Logo & MSME: src/assets se direct import ──────────────────────────────────
-import logoImg from "../../assets/logo.png";
-import msmeLogo from "../../assets/msme-logo.png";
-
-/* ─── CONFIG (.env se) ──────────────────────────────────────────────────────── */
+/* ─── CONFIG ──────────────────────────────────────────────────────────────── */
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 const ADMIN_USER = import.meta.env.VITE_ADMIN_USERNAME || "Tannu@2006";
 const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD || "6002@unnaT";
+// MEDIA_BASE: /api ya /api/ dono handle karta hai
+const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
-// MEDIA_BASE: backend root URL (without /api) — for serving uploaded images
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api")
-    .replace(/\/api\/?$/, "");
-
-/* ─── UTILS ─────────────────────────────────────────────────────────────────── */
+/* ─── UTILS ───────────────────────────────────────────────────────────────── */
 const initials = (n = "") => n.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 const YEAR = new Date().getFullYear();
 
@@ -24,66 +18,54 @@ async function apiFetch(path, opts = {}) {
     return { ok: res.ok, status: res.status, data };
 }
 
-/* ─── LOGO COMPONENTS (src/assets se) ──────────────────────────────────────── */
+/* ─── LOGO ────────────────────────────────────────────────────────────────── */
 function Logo({ size = 40 }) {
-    return (
-        <img
-            src={logoImg}
-            alt="Tannu Tailoring Logo"
-            width={size}
-            height={size}
+    const [err, setErr] = useState(false);
+    if (!err) return (
+        <img src="../../assets/logo.png" alt="Logo" width={size} height={size}
             style={{ borderRadius: "50%", objectFit: "cover" }}
-        />
+            onError={() => setErr(true)} />
+    );
+    return (
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="50" fill="#D4A820" />
+            <path d="M50 48L78 38L80 43L52 52Z" fill="#1C1208" />
+            <path d="M50 52L78 62L80 57L52 48Z" fill="#1C1208" />
+            <circle cx="50" cy="50" r="4" fill="#1C1208" /><circle cx="50" cy="50" r="2" fill="#D4A820" />
+            <circle cx="30" cy="38" r="9" fill="none" stroke="#1C1208" strokeWidth="3.5" />
+            <circle cx="30" cy="62" r="9" fill="none" stroke="#1C1208" strokeWidth="3.5" />
+            <line x1="38" y1="42" x2="50" y2="48" stroke="#1C1208" strokeWidth="3.5" strokeLinecap="round" />
+            <line x1="38" y1="58" x2="50" y2="52" stroke="#1C1208" strokeWidth="3.5" strokeLinecap="round" />
+        </svg>
     );
 }
 
 function MSMELogo({ size = 38 }) {
     return (
-        <img
-            src={msmeLogo}
-            alt="MSME Registered"
-            width={size}
-            height={size}
-        />
+        <img src="../../assets/msme-logo.png" alt="MSME Logo" width={size} height={size} />
     );
 }
 
-/* ─── ROOT ──────────────────────────────────────────────────────────────────── */
+/* ─── ROOT ────────────────────────────────────────────────────────────────── */
 export default function App() {
     const [page, setPage] = useState("home");
     const [selected, setSelected] = useState(null);
     const [adminOk, setAdminOk] = useState(false);
     const [stats, setStats] = useState({ total: 0, paid: 0 });
-
     const [cfg, setCfg] = useState({
+        courseRate: "499", udyamNo: "UDYAM-GJ-XXXXXXXX",
+        trainerName: "Tanisha Pathan",
         institution: "Tannu Tailoring & Fashion Classes",
-        trainer_name: "Tanisha Pathan",
-        udyam_no: "UDYAM-GJ-XXXXXXXX",
-        phone: "",
-        course_rate: "499",
-        theme: "light",
+        phone: "", theme: "light",
     });
 
-    const fetchSettings = useCallback(() => {
-        apiFetch("/settings/")
-            .then(r => { if (r.ok) setCfg(prev => ({ ...prev, ...r.data })); })
-            .catch(() => { });
-    }, []);
+    const fetchStats = () =>
+        apiFetch("/stats/").then(r => r.ok && setStats(r.data)).catch(() => { });
 
-    const fetchStats = useCallback(() => {
-        apiFetch("/stats/")
-            .then(r => r.ok && setStats(r.data))
-            .catch(() => { });
-    }, []);
-
-    useEffect(() => {
-        fetchSettings();
-        fetchStats();
-    }, [fetchSettings, fetchStats]);
-
-    useEffect(() => {
-        document.body.className = cfg.theme === "dark" ? "dark" : "";
-    }, [cfg.theme]);
+    useEffect(() => { fetchStats(); }, []);
+    useEffect(() => { document.body.className = cfg.theme === "dark" ? "dark" : ""; }, [cfg.theme]);
+    // Browser tab title
+    useEffect(() => { document.title = "Tannu Tailoring"; }, []);
 
     const nav = p => { setPage(p); setSelected(null); };
     const openCert = c => { setSelected(c); setPage("certView"); };
@@ -93,28 +75,25 @@ export default function App() {
             <Nav nav={nav} cfg={cfg} setCfg={setCfg} />
             {page === "home" && <HomePage nav={nav} cfg={cfg} stats={stats} />}
             {page === "search" && <SearchPage onOpen={openCert} />}
-            {page === "certView" && <CertViewPage cert={selected} onBack={() => nav("search")} />}
+            {page === "certView" && <CertViewPage cert={selected} cfg={cfg} onBack={() => nav("search")} />}
             {page === "admin" && (adminOk
-                ? <AdminPanel cfg={cfg} setCfg={setCfg} onRefresh={() => { fetchStats(); fetchSettings(); }} />
+                ? <AdminPanel cfg={cfg} setCfg={setCfg} onRefresh={fetchStats} />
                 : <LoginPage onAuth={() => setAdminOk(true)} />
             )}
         </div>
     );
 }
 
-/* ─── NAV ───────────────────────────────────────────────────────────────────── */
+/* ─── NAV ─────────────────────────────────────────────────────────────────── */
 function Nav({ nav, cfg, setCfg }) {
     return (
         <nav className={styles.nav}>
             <div className={styles.navBrand} onClick={() => nav("home")}>
                 <Logo size={34} />
-                {/* Title: hardcoded "Tannu Tailoring" as requested */}
                 <span className={styles.navTitle}>Tannu Tailoring</span>
             </div>
-            <button
-                className={styles.navBtn}
-                onClick={() => setCfg(c => ({ ...c, theme: c.theme === "dark" ? "light" : "dark" }))}
-            >
+            <button className={styles.navBtn}
+                onClick={() => setCfg(c => ({ ...c, theme: c.theme === "dark" ? "light" : "dark" }))}>
                 {cfg.theme === "dark" ? "☀ Day" : "☾ Night"}
             </button>
         </nav>
@@ -130,9 +109,7 @@ function HomePage({ nav, cfg, stats }) {
             const res = await fetch(`${API}/sample-certificate/`);
             if (!res.ok) throw new Error();
             const url = URL.createObjectURL(await res.blob());
-            Object.assign(document.createElement("a"), {
-                href: url, download: "Tannu-Certificate-Sample.png"
-            }).click();
+            Object.assign(document.createElement("a"), { href: url, download: "Tannu-Certificate-Sample.png" }).click();
             URL.revokeObjectURL(url);
         } catch {
             alert("Sample certificate not found.\nPlace Tannu-certificate-demo.png in tannu_backend/assets/");
@@ -142,11 +119,7 @@ function HomePage({ nav, cfg, stats }) {
     return (
         <div className={styles.home}>
             <div className={styles.hero}>
-
-                <div className={styles.heroBadge}>
-                    <MSMELogo size={16} />
-                    MSME Registered Institute
-                </div>
+                <div className={styles.heroBadge}><MSMELogo size={16} /> MSME Registered Institute</div>
 
                 {/* Sewing machine SVG illustration */}
                 <svg width="200" height="140" viewBox="0 0 200 140" fill="none" style={{ margin: "0 0 1rem" }}>
@@ -184,33 +157,25 @@ function HomePage({ nav, cfg, stats }) {
                 <div className={styles.heroStats}>
                     <div className={styles.stat}><div className={styles.statN}>{stats.total || "0+"}</div><div className={styles.statL}>Certified</div></div>
                     <div className={styles.stat}><div className={styles.statN}>1 Month</div><div className={styles.statL}>Duration</div></div>
-                    <div className={styles.stat}><div className={styles.statN}>₹{cfg.course_rate}</div><div className={styles.statL}>Fees</div></div>
+                    <div className={styles.stat}><div className={styles.statN}>₹499</div><div className={styles.statL}>Fees</div></div>
                 </div>
 
+                {/* Sample cert */}
                 <div className={styles.demoWrap}>
-                    <img
-                        src="/assets/Tannu-certificate-demo.png"
-                        alt="Sample Certificate"
+                    <img src="/assets/Tannu-certificate-demo.png" alt="Sample Certificate"
                         className={styles.demoCert}
-                        onError={e => e.target.style.display = "none"}
-                    />
-                    <button className={styles.demoBtn} onClick={dlSample}>
-                        ⬇ Download Sample Certificate
-                    </button>
+                        onError={e => e.target.style.display = "none"} />
+                    <button className={styles.demoBtn} onClick={dlSample}>⬇ Download Sample Certificate</button>
                 </div>
 
                 <div className={styles.homeCards}>
                     {[
                         {
-                            title: "Get Verified",
-                            desc: "Verify any certificate by name or cert number",
-                            page: "search",
+                            title: "Get Verified", desc: "Verify any certificate by name or cert number", page: "search",
                             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B8900A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><line x1="17" y1="17" x2="22" y2="22" /></svg>
                         },
                         {
-                            title: "Get Certified",
-                            desc: "Admin — upload & manage student certificates",
-                            page: "admin",
+                            title: "Get Certified", desc: "Admin — upload & manage student certificates", page: "admin",
                             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B8900A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><line x1="7" y1="9" x2="17" y2="9" /><line x1="7" y1="13" x2="13" y2="13" /></svg>
                         },
                     ].map(c => (
@@ -226,39 +191,21 @@ function HomePage({ nav, cfg, stats }) {
                 </div>
             </div>
 
-            {/* ── FOOTER — sab backend DB se (cfg) ── */}
+            {/* Footer / info strip from settings */}
             <div className={styles.infoStrip}>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Institute</div>
-                    <div className={styles.infoVal}>{cfg.institution}</div>
-                </div>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Trainer</div>
-                    <div className={styles.infoVal}>{cfg.trainer_name} · Founder</div>
-                </div>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Udyam No</div>
-                    <div className={styles.infoVal}>{cfg.udyam_no}</div>
-                </div>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Phone</div>
-                    <div className={styles.infoVal}>{cfg.phone || "—"}</div>
-                </div>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Total Certified</div>
-                    <div className={styles.infoVal}>{stats.total} Students</div>
-                </div>
-                <div className={styles.infoItem}>
-                    <div className={styles.infoLabel}>Paid</div>
-                    <div className={styles.infoVal}>{stats.paid} / {stats.total}</div>
-                </div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Institute</div><div className={styles.infoVal}>Tannu Tailoring &amp; Fashion Classes</div></div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Trainer</div><div className={styles.infoVal}>Tanisha Pathan · Founder</div></div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Udyam No</div><div className={styles.infoVal}>UDYAM-GJ-XXXXXXXX</div></div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Total Certified</div><div className={styles.infoVal}>{stats.total} Students</div></div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Paid</div><div className={styles.infoVal}>{stats.paid} / {stats.total}</div></div>
+                <div className={styles.infoItem}><div className={styles.infoLabel}>Skills</div><div className={styles.infoVal}>Cutting · Stitching · Finishing</div></div>
             </div>
         </div>
     );
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   PAGE 2 — SEARCH (real-time debounce)
+   PAGE 2 — SEARCH (real-time, every character)
 ══════════════════════════════════════════════════════════════════════════════ */
 function SearchPage({ onOpen }) {
     const [q, setQ] = useState("");
@@ -290,13 +237,9 @@ function SearchPage({ onOpen }) {
 
             <div className={styles.searchCard}>
                 <label className={styles.fieldLabel}>Name or Certificate Number</label>
-                <input
-                    className={styles.fieldInput}
-                    autoFocus
+                <input className={styles.fieldInput} autoFocus
                     placeholder={`e.g. Priya Sharma  or  STC-${YEAR}-001`}
-                    value={q}
-                    onChange={handleInput}
-                />
+                    value={q} onChange={handleInput} />
             </div>
 
             {loading && <div className={styles.emptyHint}>Searching…</div>}
@@ -306,12 +249,9 @@ function SearchPage({ onOpen }) {
             {!loading && results.length > 0 && (
                 <div className={styles.resultList}>
                     {results.map((r, i) => (
-                        <div
-                            key={r.id}
-                            className={styles.rcard}
+                        <div key={r.id} className={styles.rcard}
                             style={{ animationDelay: `${i * 0.06}s` }}
-                            onClick={() => onOpen(r)}
-                        >
+                            onClick={() => onOpen(r)}>
                             <div className={styles.rcardAvatar}>{initials(r.name)}</div>
                             <div style={{ flex: 1 }}>
                                 <div className={styles.rcardName}>{r.name}</div>
@@ -329,20 +269,10 @@ function SearchPage({ onOpen }) {
 
 /* ══════════════════════════════════════════════════════════════════════════════
    PAGE 3 — CERTIFICATE DETAIL VIEW
-   - Certificate image DATABASE se fetch hoti hai (MEDIA_BASE + certificate_file path)
-   - Koi CSS card nahi — actual uploaded PNG dikhti hai
 ══════════════════════════════════════════════════════════════════════════════ */
-function CertViewPage({ cert, onBack }) {
+function CertViewPage({ cert, cfg, onBack }) {
     if (!cert) return null;
     const [dling, setDling] = useState(false);
-    const [imgErr, setImgErr] = useState(false);
-
-    // Database mein stored relative path → full URL
-    // e.g. "certificates/STC-2026-001_Priya_Sharma.png"
-    // → "http://localhost:8000/media/certificates/STC-2026-001_Priya_Sharma.png"
-    const imgUrl = cert.certificate_file
-        ? `${MEDIA_BASE}/media/${cert.certificate_file}`
-        : null;
 
     const download = async () => {
         setDling(true);
@@ -350,42 +280,35 @@ function CertViewPage({ cert, onBack }) {
             const res = await fetch(`${API}/students/${cert.id}/certificate/`);
             if (!res.ok) throw new Error((await res.json()).error || "Failed");
             const url = URL.createObjectURL(await res.blob());
-            Object.assign(document.createElement("a"), {
-                href: url,
-                download: `${cert.cert_no}_${cert.name.replace(/ /g, "_")}.png`
-            }).click();
+            const a = Object.assign(document.createElement("a"), {
+                href: url, download: `${cert.cert_no}_${cert.name.replace(/ /g, "_")}.png`
+            });
+            a.click();
             URL.revokeObjectURL(url);
         } catch (e) { alert("Download failed: " + e.message); }
         setDling(false);
     };
 
+    // image preview URL
+    const imgUrl = cert.certificate_file
+        ? `${MEDIA_BASE}/media/${cert.certificate_file}`
+        : null;
+
     return (
         <div className={styles.certDetail}>
-            <button
-                className={`${styles.btn} ${styles.btnGhost}`}
-                style={{ marginBottom: "1rem" }}
-                onClick={onBack}
-            >
-                ← Back to search
+            <button className={`${styles.btn} ${styles.btnGhost}`} style={{ marginBottom: "1rem" }} onClick={onBack}>
+                ← Back
             </button>
 
-            <div className={styles.pageHeading} style={{ marginBottom: ".2rem" }}>
-                {cert.name}
-            </div>
+            <div className={styles.pageHeading}>{cert.name}</div>
             <div className={styles.certNoLabel}>{cert.cert_no}</div>
 
-            {/* Student details grid */}
+            {/* Details grid */}
             <div className={styles.detailGrid}>
-                {[
-                    ["Phone", cert.phone],
-                    ["Age", cert.age],
-                    ["Birthdate", cert.birthdate],
-                    ["Village", cert.village],
-                    ["District", cert.district],
-                    ["Start Date", cert.start_date],
-                    ["End Date", cert.end_date],
-                    ["Fees", cert.fees ? `₹${cert.fees}` : "—"],
-                    ["Payment", cert.paid ? "✓ Paid" : "✗ Pending"],
+                {[["Phone", cert.phone], ["Age", cert.age], ["Birthdate", cert.birthdate],
+                ["Village", cert.village], ["District", cert.district],
+                ["Start Date", cert.start_date], ["End Date", cert.end_date],
+                ["Fees", cert.fees ? `₹${cert.fees}` : "—"], ["Payment", cert.paid ? "✓ Paid" : "✗ Pending"]
                 ].map(([l, v]) => (
                     <div className={styles.ditem} key={l}>
                         <span className={styles.ditemLabel}>{l}</span>
@@ -394,31 +317,19 @@ function CertViewPage({ cert, onBack }) {
                 ))}
             </div>
 
-            {/* ── Certificate image from database ── */}
-            {imgUrl && !imgErr ? (
+            {/* Uploaded certificate image */}
+            {imgUrl ? (
                 <div className={styles.certImageWrap}>
-                    <img
-                        src={imgUrl}
-                        alt={`Certificate — ${cert.name}`}
-                        className={styles.certImage}
-                        onError={() => setImgErr(true)}
-                    />
+                    <img src={imgUrl} alt="Certificate" className={styles.certImage} />
                 </div>
             ) : (
                 <div className={styles.certImagePlaceholder}>
-                    {imgErr
-                        ? "⚠ Image load nahi ho rahi. Backend MEDIA_URL check karo."
-                        : "📄 Is student ka certificate image upload nahi hua."}
+                    No certificate image uploaded for this student.
                 </div>
             )}
 
-            {/* Download button — only if image exists */}
-            {imgUrl && !imgErr && (
-                <button
-                    className={`${styles.btn} ${styles.btnGold}`}
-                    onClick={download}
-                    disabled={dling}
-                >
+            {imgUrl && (
+                <button className={`${styles.btn} ${styles.btnGold}`} onClick={download} disabled={dling}>
                     {dling ? "Downloading…" : "⬇ Download Certificate"}
                 </button>
             )}
@@ -434,17 +345,10 @@ function LoginPage({ onAuth }) {
     const [p, setP] = useState("");
     const [err, setErr] = useState("");
 
-    const tryLogin = () => {
-        if (u === ADMIN_USER && p === ADMIN_PASS) onAuth();
-        else setErr("Wrong username or password.");
-    };
-
     return (
         <div className={styles.loginBg}>
             <div className={styles.loginBox}>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                    <Logo size={58} />
-                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}><Logo size={58} /></div>
                 <div className={styles.loginTitle}>Admin Login</div>
                 <div className={styles.loginSub}>Get Certified — Authorised Access Only</div>
                 <div style={{ marginBottom: ".9rem" }}>
@@ -453,17 +357,15 @@ function LoginPage({ onAuth }) {
                 </div>
                 <div style={{ marginBottom: ".4rem" }}>
                     <label className={styles.fieldLabel}>Password</label>
-                    <input
-                        className={styles.fi}
-                        type="password"
-                        placeholder="Password"
-                        value={p}
+                    <input className={styles.fi} type="password" placeholder="Password" value={p}
                         onChange={e => setP(e.target.value)}
-                        onKeyDown={e => e.key === "Enter" && tryLogin()}
-                    />
+                        onKeyDown={e => e.key === "Enter" && (u === ADMIN_USER && p === ADMIN_PASS ? onAuth() : setErr("Wrong credentials."))} />
                 </div>
                 {err && <div className={styles.msgErr}>{err}</div>}
-                <button className={`${styles.btn} ${styles.btnGold}`} onClick={tryLogin}>Login</button>
+                <button className={`${styles.btn} ${styles.btnGold}`}
+                    onClick={() => u === ADMIN_USER && p === ADMIN_PASS ? onAuth() : setErr("Wrong credentials.")}>
+                    Login
+                </button>
             </div>
         </div>
     );
@@ -478,13 +380,7 @@ function AdminPanel({ cfg, setCfg, onRefresh }) {
         <div className={styles.adminWrap}>
             <div className={styles.tabs}>
                 {[["add", "+ Upload Certificate"], ["list", "All Certificates"], ["settings", "⚙ Settings"]].map(([k, l]) => (
-                    <button
-                        key={k}
-                        className={`${styles.tab}${tab === k ? " " + styles.tabOn : ""}`}
-                        onClick={() => setTab(k)}
-                    >
-                        {l}
-                    </button>
+                    <button key={k} className={`${styles.tab}${tab === k ? " " + styles.tabOn : ""}`} onClick={() => setTab(k)}>{l}</button>
                 ))}
             </div>
             {tab === "add" && <UploadForm cfg={cfg} onAdded={onRefresh} />}
@@ -495,23 +391,24 @@ function AdminPanel({ cfg, setCfg, onRefresh }) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   UPLOAD FORM — 2 confirmation steps
+   UPLOAD FORM — 2 confirmation windows
 ══════════════════════════════════════════════════════════════════════════════ */
 function UploadForm({ cfg, onAdded }) {
     const blank = {
         name: "", phone: "", village: "", district: "",
         age: "", birthdate: "", start_date: "", end_date: "",
-        fees: cfg.course_rate, paid: false,
+        fees: cfg.courseRate, paid: false,
     };
     const [f, setF] = useState(blank);
-    const [certNo, setCertNo] = useState("");
-    const [imgFile, setImgFile] = useState(null);
-    const [imgPrev, setImgPrev] = useState(null);
-    const [step, setStep] = useState("form");
+    const [certNo, setCertNo] = useState("");      // auto-generated preview
+    const [imgFile, setImgFile] = useState(null);   // File object
+    const [imgPrev, setImgPrev] = useState(null);   // blob URL
+    const [step, setStep] = useState("form"); // form | confirm1 | confirm2 | done
     const [msg, setMsg] = useState(null);
     const [loading, setLoading] = useState(false);
     const fileRef = useRef();
 
+    // Fetch next cert no on mount
     useEffect(() => {
         apiFetch("/next-cert-no/").then(r => r.ok && setCertNo(r.data.cert_no));
     }, []);
@@ -532,6 +429,7 @@ function UploadForm({ cfg, onAdded }) {
         return null;
     };
 
+    /* Step 1 → Confirmation window 1: cert number match check */
     const goConfirm1 = () => {
         const err = validate();
         if (err) { setMsg({ ok: false, t: err }); return; }
@@ -539,6 +437,10 @@ function UploadForm({ cfg, onAdded }) {
         setStep("confirm1");
     };
 
+    /* Step 2 → Confirmation window 2: full details review */
+    const goConfirm2 = () => setStep("confirm2");
+
+    /* Final submit */
     const submit = async () => {
         setLoading(true);
         const fd = new FormData();
@@ -561,35 +463,37 @@ function UploadForm({ cfg, onAdded }) {
             setMsg({ ok: true, t: `✓ Certificate saved — ${certNo}` });
             setF(blank); setImgFile(null); setImgPrev(null);
             onAdded();
+            // Refresh cert no
             apiFetch("/next-cert-no/").then(x => x.ok && setCertNo(x.data.cert_no));
         } else {
-            setMsg({ ok: false, t: Object.values(r.data).flat().join(" ") });
+            const errText = Object.values(r.data).flat().join(" ");
+            setMsg({ ok: false, t: errText });
             setStep("form");
         }
         setLoading(false);
     };
 
+    /* ── STEP: DONE ── */
     if (step === "done") return (
         <div className={styles.confirmBox}>
             <div className={styles.confirmTitle}>🎉 Certificate Saved!</div>
             {msg && <div className={styles.msgOk}>{msg.t}</div>}
-            <button className={`${styles.btn} ${styles.btnGold}`}
-                onClick={() => { setStep("form"); setMsg(null); }}>
+            <button className={`${styles.btn} ${styles.btnGold}`} onClick={() => { setStep("form"); setMsg(null); }}>
                 + Add Another
             </button>
         </div>
     );
 
+    /* ── STEP: CONFIRM 2 — full details ── */
     if (step === "confirm2") return (
         <div className={styles.confirmBox}>
             <div className={styles.confirmTitle}>Step 2 of 2 — Confirm All Details</div>
             <div className={styles.confirmGrid}>
-                {[
-                    ["Certificate No", certNo], ["Name", f.name], ["Phone", f.phone],
-                    ["Age", f.age], ["Birthdate", f.birthdate], ["Village", f.village],
-                    ["District", f.district], ["Start Date", f.start_date],
-                    ["End Date", f.end_date], ["Fees", `₹${f.fees}`],
-                    ["Paid", f.paid ? "Yes" : "No"], ["Image", imgFile?.name || "—"],
+                {[["Certificate No", certNo], ["Name", f.name], ["Phone", f.phone],
+                ["Age", f.age], ["Birthdate", f.birthdate], ["Village", f.village],
+                ["District", f.district], ["Start Date", f.start_date],
+                ["End Date", f.end_date], ["Fees", `₹${f.fees}`], ["Paid", f.paid ? "Yes" : "No"],
+                ["Image", imgFile?.name || "—"]
                 ].map(([k, v]) => (
                     <div key={k} className={styles.confirmRow}>
                         <span className={styles.confirmKey}>{k}</span>
@@ -597,127 +501,105 @@ function UploadForm({ cfg, onAdded }) {
                     </div>
                 ))}
             </div>
-            {imgPrev && (
-                <img src={imgPrev} alt="cert preview"
-                    style={{ width: "100%", borderRadius: 8, marginTop: "1rem", border: "1px solid var(--border)" }} />
-            )}
+            {imgPrev && <img src={imgPrev} alt="cert preview" style={{ width: "100%", borderRadius: 8, marginTop: "1rem", border: "1px solid var(--border)" }} />}
             <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                <button className={`${styles.btn} ${styles.btnGold}`} style={{ flex: 1 }}
-                    onClick={submit} disabled={loading}>
+                <button className={`${styles.btn} ${styles.btnGold}`} style={{ flex: 1 }} onClick={submit} disabled={loading}>
                     {loading ? "Saving…" : "✓ Confirm & Save"}
                 </button>
-                <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }}
-                    onClick={() => setStep("confirm1")}>
+                <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }} onClick={() => setStep("confirm1")}>
                     ← Back
                 </button>
             </div>
         </div>
     );
 
+    /* ── STEP: CONFIRM 1 — cert number match ── */
     if (step === "confirm1") return (
         <div className={styles.confirmBox}>
             <div className={styles.confirmTitle}>Step 1 of 2 — Verify Certificate Number</div>
             <p style={{ fontSize: ".88rem", color: "var(--muted)", marginBottom: "1rem", lineHeight: 1.6 }}>
-                System ne <strong>{f.name}</strong> ke liye yeh certificate number generate kiya hai.
-                Confirm karo ki uploaded image par yahi number likha hai.
+                The system has generated the following certificate number for <strong>{f.name}</strong>.
+                Please confirm this matches the number printed on the uploaded certificate image.
             </p>
             <div className={styles.certNoBig}>{certNo}</div>
             {imgPrev && (
                 <img src={imgPrev} alt="uploaded cert"
-                    style={{
-                        width: "100%", borderRadius: 8, margin: "1rem 0",
-                        border: "2px solid var(--gold2)", maxHeight: 220, objectFit: "contain"
-                    }} />
+                    style={{ width: "100%", borderRadius: 8, margin: "1rem 0", border: "2px solid var(--gold2)", maxHeight: 220, objectFit: "contain" }} />
             )}
             <p style={{ fontSize: ".82rem", color: "var(--muted)", marginBottom: "1rem" }}>
-                Kya certificate image mein <strong>{certNo}</strong> likha hai?
+                Does the certificate image show <strong>{certNo}</strong>?
             </p>
             <div style={{ display: "flex", gap: "1rem" }}>
-                <button className={`${styles.btn} ${styles.btnGold}`} style={{ flex: 1 }}
-                    onClick={() => setStep("confirm2")}>
+                <button className={`${styles.btn} ${styles.btnGold}`} style={{ flex: 1 }} onClick={goConfirm2}>
                     ✓ Yes, it matches
                 </button>
-                <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }}
-                    onClick={() => setStep("form")}>
+                <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }} onClick={() => setStep("form")}>
                     ✗ No, go back
                 </button>
             </div>
         </div>
     );
 
+    /* ── STEP: FORM ── */
     return (
         <div>
+            {/* Auto cert no display */}
             <div className={styles.certNoPreview}>
                 <span className={styles.certNoLabel2}>Auto-Generated Certificate No</span>
                 <span className={styles.certNoBig}>{certNo || "Loading…"}</span>
-                <span className={styles.certNoHint}>
-                    Write this number on the physical certificate before uploading its image.
-                </span>
+                <span className={styles.certNoHint}>Write this number on the physical certificate before uploading its image.</span>
             </div>
 
             <div className={styles.formGrid}>
                 <div className={`${styles.field} ${styles.full}`}>
                     <label className={styles.fieldLabel}>Full Name *</label>
-                    <input className={styles.fi} placeholder="Student Full Name"
-                        value={f.name} onChange={e => set("name", e.target.value)} />
+                    <input className={styles.fi} placeholder="Student Full Name" value={f.name} onChange={e => set("name", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Phone</label>
-                    <input className={styles.fi} placeholder="Mobile number"
-                        value={f.phone} onChange={e => set("phone", e.target.value)} />
+                    <input className={styles.fi} placeholder="Mobile number" value={f.phone} onChange={e => set("phone", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Age</label>
-                    <input className={styles.fi} type="number" placeholder="Age"
-                        value={f.age} onChange={e => set("age", e.target.value)} />
+                    <input className={styles.fi} type="number" placeholder="Age" value={f.age} onChange={e => set("age", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Birthdate</label>
-                    <input className={styles.fi} type="date"
-                        value={f.birthdate} onChange={e => set("birthdate", e.target.value)} />
+                    <input className={styles.fi} type="date" value={f.birthdate} onChange={e => set("birthdate", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Village / City</label>
-                    <input className={styles.fi} placeholder="Village or City"
-                        value={f.village} onChange={e => set("village", e.target.value)} />
+                    <input className={styles.fi} placeholder="Village or City" value={f.village} onChange={e => set("village", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>District</label>
-                    <input className={styles.fi} placeholder="District"
-                        value={f.district} onChange={e => set("district", e.target.value)} />
+                    <input className={styles.fi} placeholder="District" value={f.district} onChange={e => set("district", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Course Start</label>
-                    <input className={styles.fi} type="date"
-                        value={f.start_date} onChange={e => set("start_date", e.target.value)} />
+                    <input className={styles.fi} type="date" value={f.start_date} onChange={e => set("start_date", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Course End</label>
-                    <input className={styles.fi} type="date"
-                        value={f.end_date} onChange={e => set("end_date", e.target.value)} />
+                    <input className={styles.fi} type="date" value={f.end_date} onChange={e => set("end_date", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Fees (₹)</label>
-                    <input className={styles.fi} type="number"
-                        value={f.fees} onChange={e => set("fees", e.target.value)} />
+                    <input className={styles.fi} type="number" value={f.fees} onChange={e => set("fees", e.target.value)} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.fieldLabel}>Payment Status</label>
-                    <select className={styles.fi}
-                        value={f.paid ? "paid" : "pending"}
-                        onChange={e => set("paid", e.target.value === "paid")}>
+                    <select className={styles.fi} value={f.paid ? "paid" : "pending"} onChange={e => set("paid", e.target.value === "paid")}>
                         <option value="paid">✓ Paid</option>
                         <option value="pending">✗ Pending</option>
                     </select>
                 </div>
 
+                {/* Image upload */}
                 <div className={`${styles.field} ${styles.full}`}>
                     <label className={styles.fieldLabel}>Certificate Image * (PNG/JPG)</label>
-                    <div
-                        className={styles.uploadArea}
-                        onClick={() => fileRef.current?.click()}
-                        style={imgPrev ? { borderColor: "var(--gold2)" } : {}}
-                    >
+                    <div className={styles.uploadArea} onClick={() => fileRef.current?.click()}
+                        style={imgPrev ? { borderColor: "var(--gold2)" } : {}}>
                         {imgPrev
                             ? <img src={imgPrev} alt="preview" className={styles.uploadPreview} />
                             : <div className={styles.uploadPlaceholder}>
@@ -726,15 +608,11 @@ function UploadForm({ cfg, onAdded }) {
                                 <span style={{ fontSize: ".75rem", color: "var(--muted)" }}>PNG, JPG — of the actual signed certificate</span>
                             </div>
                         }
-                        <input ref={fileRef} type="file" accept="image/*"
-                            style={{ display: "none" }} onChange={handleFile} />
+                        <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFile} />
                     </div>
                     {imgPrev && (
-                        <button
-                            className={`${styles.btn} ${styles.btnGhost}`}
-                            style={{ marginTop: ".4rem", padding: ".5rem", fontSize: ".8rem" }}
-                            onClick={() => { setImgFile(null); setImgPrev(null); fileRef.current.value = ""; }}
-                        >
+                        <button className={`${styles.btn} ${styles.btnGhost}`} style={{ marginTop: ".4rem", padding: ".5rem", fontSize: ".8rem" }}
+                            onClick={() => { setImgFile(null); setImgPrev(null); fileRef.current.value = ""; }}>
                             × Remove image
                         </button>
                     )}
@@ -755,7 +633,7 @@ function UploadForm({ cfg, onAdded }) {
 function CertList({ onRefresh }) {
     const [list, setList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [delId, setDelId] = useState(null);
+    const [delId, setDelId] = useState(null); // confirm delete modal
     const [delLoad, setDelLoad] = useState(false);
     const [sq, setSq] = useState("");
 
@@ -772,7 +650,8 @@ function CertList({ onRefresh }) {
     const doDelete = async () => {
         setDelLoad(true);
         const r = await apiFetch(`/students/${delId}/delete/`, { method: "DELETE" });
-        setDelLoad(false); setDelId(null);
+        setDelLoad(false);
+        setDelId(null);
         if (r.ok) { load(); onRefresh(); }
         else alert("Delete failed.");
     };
@@ -785,28 +664,24 @@ function CertList({ onRefresh }) {
 
     return (
         <div>
-            <input
-                className={styles.fieldInput}
-                placeholder="Filter by name or cert no…"
-                value={sq}
-                onChange={e => setSq(e.target.value)}
-                style={{ marginBottom: "1rem" }}
-            />
+            <input className={styles.fieldInput} placeholder="Filter by name or cert no…"
+                value={sq} onChange={e => setSq(e.target.value)} style={{ marginBottom: "1rem" }} />
 
+            {/* Delete confirmation modal */}
             {delId && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalBox}>
                         <div className={styles.modalTitle}>Delete Certificate?</div>
                         <p style={{ fontSize: ".88rem", color: "var(--muted)", margin: ".5rem 0 1.2rem", lineHeight: 1.6 }}>
-                            This will permanently delete the student record and certificate image. This cannot be undone.
+                            This will permanently delete the student record and their certificate image. This cannot be undone.
                         </p>
                         <div style={{ display: "flex", gap: "1rem" }}>
-                            <button className={`${styles.btn} ${styles.btnDanger}`} style={{ flex: 1 }}
-                                onClick={doDelete} disabled={delLoad}>
+                            <button className={`${styles.btn} ${styles.btnDanger}`} style={{ flex: 1 }} onClick={doDelete} disabled={delLoad}>
                                 {delLoad ? "Deleting…" : "Delete"}
                             </button>
-                            <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }}
-                                onClick={() => setDelId(null)}>Cancel</button>
+                            <button className={`${styles.btn} ${styles.btnGhost}`} style={{ flex: 1 }} onClick={() => setDelId(null)}>
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -833,82 +708,45 @@ function CertList({ onRefresh }) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   SETTINGS — backend DB mein save hota hai
+   SETTINGS
 ══════════════════════════════════════════════════════════════════════════════ */
 function SettingsPanel({ cfg, setCfg }) {
-    const [local, setLocal] = useState({
-        institution: cfg.institution || "",
-        trainer_name: cfg.trainer_name || "",
-        udyam_no: cfg.udyam_no || "",
-        phone: cfg.phone || "",
-        course_rate: cfg.course_rate || "499",
-    });
-    const [saving, setSaving] = useState(false);
-    const [msg, setMsg] = useState(null);
-
-    useEffect(() => {
-        setLocal({
-            institution: cfg.institution || "",
-            trainer_name: cfg.trainer_name || "",
-            udyam_no: cfg.udyam_no || "",
-            phone: cfg.phone || "",
-            course_rate: cfg.course_rate || "499",
-        });
-    }, [cfg]);
-
+    const [local, setLocal] = useState(cfg);
     const set = (k, v) => setLocal(x => ({ ...x, [k]: v }));
-
-    const save = async () => {
-        setSaving(true); setMsg(null);
-        try {
-            const r = await apiFetch("/settings/update/", {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(local),
-            });
-            if (r.ok) {
-                setCfg(prev => ({ ...prev, ...r.data }));
-                setMsg({ ok: true, t: "✓ Settings saved to database successfully." });
-            } else {
-                setMsg({ ok: false, t: "Failed to save. Please try again." });
-            }
-        } catch {
-            setMsg({ ok: false, t: "Network error. Is the backend running?" });
-        }
-        setSaving(false);
-    };
-
-    const fields = [
-        ["Institution Name", "institution"],
-        ["Trainer Name", "trainer_name"],
-        ["Udyam Registration No", "udyam_no"],
-        ["Phone Number", "phone"],
-        ["Course Rate (₹)", "course_rate"],
-    ];
-
     return (
         <div>
             <div className={styles.settingsGroup}>
                 <div className={styles.sgHead}>Institute Details</div>
                 <div className={styles.sgBody}>
-                    {fields.map(([label, key]) => (
+                    {[["Institution Name", "institution"], ["Trainer Name", "trainerName"],
+                    ["Udyam Registration No", "udyamNo"], ["Phone Number", "phone"]
+                    ].map(([label, key]) => (
                         <div key={key}>
                             <label className={styles.fieldLabel}>{label}</label>
-                            <input
-                                className={styles.fi}
-                                type={key === "course_rate" ? "number" : "text"}
-                                value={local[key] || ""}
-                                onChange={e => set(key, e.target.value)}
-                            />
+                            <input className={styles.fi} value={local[key] || ""} onChange={e => set(key, e.target.value)} />
                         </div>
                     ))}
                 </div>
             </div>
-
-            {msg && <div className={msg.ok ? styles.msgOk : styles.msgErr}>{msg.t}</div>}
-
-            <button className={`${styles.btn} ${styles.btnGold}`} onClick={save} disabled={saving}>
-                {saving ? "Saving…" : "Save Settings"}
+            <div className={styles.settingsGroup}>
+                <div className={styles.sgHead}>Course &amp; App</div>
+                <div className={styles.sgBody}>
+                    <div>
+                        <label className={styles.fieldLabel}>Course Rate (₹)</label>
+                        <input className={styles.fi} type="number" value={local.courseRate} onChange={e => set("courseRate", e.target.value)} />
+                    </div>
+                    <div>
+                        <label className={styles.fieldLabel}>App Theme</label>
+                        <select className={styles.fi} value={local.theme} onChange={e => set("theme", e.target.value)}>
+                            <option value="light">☀ Day (Light)</option>
+                            <option value="dark">☾ Night (Dark)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button className={`${styles.btn} ${styles.btnGold}`}
+                onClick={() => { setCfg(local); alert("Settings saved!"); }}>
+                Save Settings
             </button>
         </div>
     );
