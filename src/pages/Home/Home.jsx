@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./Home.module.css";
 
+// ── Assets: Vite se proper import (relative path from this file) ──────────────
+import logoImg from "../../assets/logo.png";
+import msmeImg from "../../assets/msme-logo.png";
+
 /* ─── CONFIG ──────────────────────────────────────────────────────────────── */
 const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
-const ADMIN_USER = import.meta.env.VITE_ADMIN_USERNAME || "Tannu@2006";
-const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD || "6002@unnaT";
+const ADMIN_USER = import.meta.env.VITE_ADMIN_USERNAME || "";
+const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD || "";
 // MEDIA_BASE: /api ya /api/ dono handle karta hai
 const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
@@ -18,31 +22,27 @@ async function apiFetch(path, opts = {}) {
     return { ok: res.ok, status: res.status, data };
 }
 
-/* ─── LOGO ────────────────────────────────────────────────────────────────── */
+/* ─── LOGO COMPONENTS — Vite imported assets ────────────────────────────── */
 function Logo({ size = 40 }) {
-    const [err, setErr] = useState(false);
-    if (!err) return (
-        <img src="../../assets/logo.png" alt="Logo" width={size} height={size}
-            style={{ borderRadius: "50%", objectFit: "cover" }}
-            onError={() => setErr(true)} />
-    );
     return (
-        <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
-            <circle cx="50" cy="50" r="50" fill="#D4A820" />
-            <path d="M50 48L78 38L80 43L52 52Z" fill="#1C1208" />
-            <path d="M50 52L78 62L80 57L52 48Z" fill="#1C1208" />
-            <circle cx="50" cy="50" r="4" fill="#1C1208" /><circle cx="50" cy="50" r="2" fill="#D4A820" />
-            <circle cx="30" cy="38" r="9" fill="none" stroke="#1C1208" strokeWidth="3.5" />
-            <circle cx="30" cy="62" r="9" fill="none" stroke="#1C1208" strokeWidth="3.5" />
-            <line x1="38" y1="42" x2="50" y2="48" stroke="#1C1208" strokeWidth="3.5" strokeLinecap="round" />
-            <line x1="38" y1="58" x2="50" y2="52" stroke="#1C1208" strokeWidth="3.5" strokeLinecap="round" />
-        </svg>
+        <img
+            src={logoImg}
+            alt="Tannu Tailoring"
+            width={size}
+            height={size}
+            style={{ borderRadius: "50%", objectFit: "cover" }}
+        />
     );
 }
 
 function MSMELogo({ size = 38 }) {
     return (
-        <img src="../../assets/msme-logo.png" alt="MSME Logo" width={size} height={size} />
+        <img
+            src={msmeImg}
+            alt="MSME Registered"
+            width={size}
+            height={size}
+        />
     );
 }
 
@@ -273,6 +273,21 @@ function SearchPage({ onOpen }) {
 function CertViewPage({ cert, cfg, onBack }) {
     if (!cert) return null;
     const [dling, setDling] = useState(false);
+    const [imgErr, setImgErr] = useState(false);
+    const [imgSrc, setImgSrc] = useState(null);
+
+    useEffect(() => {
+        setImgErr(false);
+        if (cert.certificate_file) {
+            // certificate_file = "certificates/STC-2026-001_Name.png"
+            // MEDIA_BASE = "https://tannu-backend.onrender.com"
+            // Full URL = "https://tannu-backend.onrender.com/media/certificates/STC-2026-001_Name.png"
+            const url = `${MEDIA_BASE}/media/${cert.certificate_file}`;
+            setImgSrc(url);
+        } else {
+            setImgSrc(null);
+        }
+    }, [cert]);
 
     const download = async () => {
         setDling(true);
@@ -280,24 +295,23 @@ function CertViewPage({ cert, cfg, onBack }) {
             const res = await fetch(`${API}/students/${cert.id}/certificate/`);
             if (!res.ok) throw new Error((await res.json()).error || "Failed");
             const url = URL.createObjectURL(await res.blob());
-            const a = Object.assign(document.createElement("a"), {
-                href: url, download: `${cert.cert_no}_${cert.name.replace(/ /g, "_")}.png`
-            });
-            a.click();
+            Object.assign(document.createElement("a"), {
+                href: url,
+                download: `${cert.cert_no}_${cert.name.replace(/ /g, "_")}.png`
+            }).click();
             URL.revokeObjectURL(url);
         } catch (e) { alert("Download failed: " + e.message); }
         setDling(false);
     };
 
-    // image preview URL
-    const imgUrl = cert.certificate_file
-        ? `${MEDIA_BASE}/media/${cert.certificate_file}`
-        : null;
-
     return (
         <div className={styles.certDetail}>
-            <button className={`${styles.btn} ${styles.btnGhost}`} style={{ marginBottom: "1rem" }} onClick={onBack}>
-                ← Back
+            <button
+                className={`${styles.btn} ${styles.btnGhost}`}
+                style={{ marginBottom: "1rem" }}
+                onClick={onBack}
+            >
+                ← Back to search
             </button>
 
             <div className={styles.pageHeading}>{cert.name}</div>
@@ -305,10 +319,16 @@ function CertViewPage({ cert, cfg, onBack }) {
 
             {/* Details grid */}
             <div className={styles.detailGrid}>
-                {[["Phone", cert.phone], ["Age", cert.age], ["Birthdate", cert.birthdate],
-                ["Village", cert.village], ["District", cert.district],
-                ["Start Date", cert.start_date], ["End Date", cert.end_date],
-                ["Fees", cert.fees ? `₹${cert.fees}` : "—"], ["Payment", cert.paid ? "✓ Paid" : "✗ Pending"]
+                {[
+                    ["Phone", cert.phone],
+                    ["Age", cert.age],
+                    ["Birthdate", cert.birthdate],
+                    ["Village", cert.village],
+                    ["District", cert.district],
+                    ["Start Date", cert.start_date],
+                    ["End Date", cert.end_date],
+                    ["Fees", cert.fees ? `₹${cert.fees}` : "—"],
+                    ["Payment", cert.paid ? "✓ Paid" : "✗ Pending"],
                 ].map(([l, v]) => (
                     <div className={styles.ditem} key={l}>
                         <span className={styles.ditemLabel}>{l}</span>
@@ -317,19 +337,33 @@ function CertViewPage({ cert, cfg, onBack }) {
                 ))}
             </div>
 
-            {/* Uploaded certificate image */}
-            {imgUrl ? (
+            {/* ── Certificate image — MEDIA_BASE/media/certificate_file ── */}
+            {imgSrc && !imgErr ? (
                 <div className={styles.certImageWrap}>
-                    <img src={imgUrl} alt="Certificate" className={styles.certImage} />
+                    <img
+                        src={imgSrc}
+                        alt={`Certificate — ${cert.name}`}
+                        className={styles.certImage}
+                        onError={() => setImgErr(true)}
+                    />
+                </div>
+            ) : imgErr ? (
+                <div className={styles.certImagePlaceholder}>
+                    ⚠ Image load nahi ho rahi.<br />
+                    <small style={{ opacity: .7 }}>URL: {imgSrc}</small>
                 </div>
             ) : (
                 <div className={styles.certImagePlaceholder}>
-                    No certificate image uploaded for this student.
+                    📄 Is student ka certificate image upload nahi hua.
                 </div>
             )}
 
-            {imgUrl && (
-                <button className={`${styles.btn} ${styles.btnGold}`} onClick={download} disabled={dling}>
+            {imgSrc && !imgErr && (
+                <button
+                    className={`${styles.btn} ${styles.btnGold}`}
+                    onClick={download}
+                    disabled={dling}
+                >
                     {dling ? "Downloading…" : "⬇ Download Certificate"}
                 </button>
             )}
