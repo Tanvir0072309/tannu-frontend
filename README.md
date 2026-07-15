@@ -1,73 +1,92 @@
 # Tannu Frontend
 
-Yeh repository "Tannu" project ka frontend hai — ek halka React + Vite based single-page application jo JavaScript aur CSS ka istemal karta hai.
+Tannu Frontend is a lightweight single-page application (SPA) built with React and Vite. This repository contains the frontend source code and assets for the Tannu project, implemented using modern JavaScript and CSS.
 
-## Features
+## Key Features
 
-- React + Vite ke saath fast development server aur HMR
-- Seed project structure for building UI components
-- Simple build & preview scripts
+- Fast development experience with Vite and hot module replacement (HMR)
+- Modular React component structure for easy UI development
+- Standard build and preview scripts for production testing
 
-## Zaroori Commands
+## Prerequisites
 
-Repository clone karne ke baad:
+- Node.js (recommended: 16.x or newer)
+- npm (or yarn / pnpm as alternatives)
 
-- Install dependencies:
+## Getting Started
 
-  ```bash
-  npm install
-  ```
+Clone the repository and install dependencies:
 
-- Development server chalane ke liye:
+```bash
+git clone https://github.com/Tanvir0072309/tannu-frontend.git
+cd tannu-frontend
+npm install
+```
 
-  ```bash
-  npm run dev
-  ```
+Start the development server:
 
-- Production build banane ke liye:
+```bash
+npm run dev
+```
 
-  ```bash
-  npm run build
-  ```
+Create a production build:
 
-- Build ko local preview karne ke liye:
+```bash
+npm run build
+```
 
-  ```bash
-  npm run preview
-  ```
+Preview the production build locally:
 
-(Ye commands package.json me maujood scripts par depend karte hain — agar aap yarn ya pnpm use karte hain to corresponding commands use karein.)
+```bash
+npm run preview
+```
 
-## Project Structure (overview)
+Note: Script names depend on the entries in package.json; if you prefer yarn or pnpm, use the equivalent commands (e.g., `yarn`, `yarn dev`).
 
-- src/       — React components aur app source
-- public/    — Static assets
-- index.html — App entry
+## Project Structure
 
-## Technologies
+- src/       — Application source code (React components, hooks, styles)
+- public/    — Static assets served at runtime
+- index.html — Application entry
+- package.json — Project scripts and dependencies
 
-- JavaScript
-- React
-- Vite
-- CSS
+## Environment
 
-## Development Notes
+If the application requires environment variables, add a `.env` file at the project root and document the expected variables here. Example:
 
-- Component banate waqt functional components aur hooks (useState, useEffect) ka istemal karein.
-- Styling ke liye CSS modules ya scoped styles adopt karna recommended hai.
-- Linting aur format rules agar configured hain to `npm run lint` / `npm run format` chalayein.
+```env
+VITE_API_BASE_URL=https://api.example.com
+```
+
+Be careful not to commit secrets to the repository.
+
+## Development Guidelines
+
+- Use functional React components and hooks (e.g., useState, useEffect).
+- Keep components small and focused; prefer composition over large monolithic components.
+- Follow existing linting and formatting rules if configured (e.g., `npm run lint`, `npm run format`).
+- Add unit and integration tests where appropriate.
+
+## Building & Deployment
+
+- Build artifacts are produced by `npm run build` and placed in the `dist/` directory by default.
+- Serve the `dist/` directory with a static file server or integrate into your deployment pipeline (Netlify, Vercel, GitHub Pages, etc.).
 
 ## Contributing
 
-Agar aap contribute karna chahte hain:
-1. Fork karo aur feature branch banao.
-2. Changes push karo aur pull request bhejo with clear description.
-3. Tests aur linter pass hone chahiye (agar configured ho).
+Contributions are welcome. Suggested workflow:
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feat/your-feature`.
+3. Commit your changes with clear messages.
+4. Push the branch and open a pull request describing the change.
+
+Please ensure tests and linting pass before opening a PR.
 
 ## License
 
-Is project ki license ka zikr yahan karein. Agar license nahi diya gaya toh by-default add karne se pehle confirm karen.
+This repository does not include a LICENSE file. Add a license to the repository and this section will be updated accordingly.
 
----
+## Support
 
-Agar aap chahte hain ki README mein project-specific screenshots, install guide (yarn/pnpm), environment variable instructions, ya live demo link add karun toh bata dein — main woh details add kar dunga.
+For questions or issues, open a GitHub issue in this repository.
